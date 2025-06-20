@@ -1,14 +1,12 @@
 <script setup>
-
+import { ref, onMounted } from 'vue'
 useHead({
   title: 'Password Generator',
   meta: [
-    { name: 'description', content: 'A simple password generator using Vue and nuxt' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
-  ],
+    { name: 'description', content: 'A simple password generator using Vue.js' },
+    { name: 'keywords', content: 'password, generator, vue, javascript' }
+  ]
 })
-
-import { ref, onMounted } from 'vue'
 
 const smallLetter = 'abcdefghijklmnopqrstuvwxyz';
 const capitalLetter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -20,23 +18,67 @@ const includeSmallLetters = ref(true);
 const includeCapitalLetters = ref(true);
 const includeNumbers = ref(false);
 const includeSpecialCharacters = ref(false);
+const finalPassword = ref('');
 
-
-
-// console.log(includeSmallLetters.value, includeCapitalLetters.value, includeNumbers.value, includeSpecialCharacters.value, passwordLength.value);
+onMounted(() => {
+  generatePassword();
+})
 
 const generatePassword = () => {
-  const base = Math.trunc(passwordLength.value / 4)
-  const extra = passwordLength.value % 4;
+  //set number find out which characters are selected and divide the password length by the number of selected character types
+  // then find the base length of each character type and the extra characters that need to be added
+  const setNumber =
+    Number(includeSmallLetters.value) +
+    Number(includeCapitalLetters.value) +
+    Number(includeNumbers.value) +
+    Number(includeSpecialCharacters.value);
+  console.log("setNumber " + setNumber);
 
-  let password = '';
+  const base = Math.trunc(passwordLength.value / setNumber)
+  const extra = passwordLength.value % setNumber;
 
+  const password = [];
+  const randomNumber = (k) => k[Math.floor(Math.random() * k.length)];   //for generating random character from the string
 
+  if (includeSmallLetters.value == true) {
+    for (let i = 0; i < base; i++) {
+      password.push(randomNumber(smallLetter))
+    }
+  }
+  if (includeCapitalLetters.value == true) {
+    for (let i = 0; i < base; i++) {
+      password.push(randomNumber(capitalLetter))
+    }
+  }
+  if (includeNumbers.value == true) {
+    for (let i = 0; i < base; i++) {
+      password.push(randomNumber(numberCharacter))
+    }
+  }
+  if (includeSpecialCharacters.value == true) {
+    for (let i = 0; i < base; i++) {
+      password.push(randomNumber(specialCharacters))
+    }
+  }
 
+  let randomCharacter = [];
+  if (extra > 0) {
+    const extraCharacters = [smallLetter, capitalLetter, numberCharacter, specialCharacters].filter((x, index) => {
+      return (index == 0 && includeSmallLetters.value) ||
+        (index == 1 && includeCapitalLetters.value) ||
+        (index == 2 && includeNumbers.value) ||
+        (index == 3 && includeSpecialCharacters.value);
+    })
 
+    for (let i = 0; i < extra; i++) {
+      randomCharacter = randomNumber(extraCharacters)
+      password.push(randomNumber(randomCharacter))
+    }
 
-
-  console.log("button submit" + includeSmallLetters.value, includeCapitalLetters.value, includeNumbers.value, includeSpecialCharacters.value, passwordLength.value + "extra: " + extra + " base: " + base);
+  }
+  console.log("password " + password);
+  password.sort(() => Math.random() - 0.5)
+  finalPassword.value = password.join('');
 
 }
 
@@ -82,14 +124,14 @@ const generatePassword = () => {
 
         </div>
       </div>
-      <div class="row">
-        <div class="row mt-5">
-          <div class="col-sm-12 text-center">
-            <button class="fw-bold btn btn-success" @click="generatePassword"> Generate Passwrod </button>
-            <div class="border border-3 p-4 mt-5 text-dark  fw-bold ">sfs</div>
-          </div>
-        </div>
-      </div>
+
+      <span
+        class="widthBox mx-auto p-4  d-flex justify-content-center align-items-center text-dark fw-bold bg-danger text-white"
+        style=" height:100px; max-width:100% !important; font-size:24px;">
+        <span>{{ finalPassword }}</span>
+      </span>
+
+
     </div>
   </div>
 </template>
