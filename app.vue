@@ -1,4 +1,13 @@
 <script setup>
+
+useHead({
+  title: 'Password Generator',
+  meta: [
+    { name: 'description', content: 'A simple password generator using Vue and nuxt' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+  ],
+})
+
 import { ref, onMounted } from 'vue'
 
 const smallLetter = 'abcdefghijklmnopqrstuvwxyz';
@@ -27,6 +36,7 @@ const generatePassword = () => {
     Number(includeSpecialCharacters.value);
   console.log("setNumber " + setNumber);
 
+  //finding base and extra characters 
   const base = Math.trunc(passwordLength.value / setNumber)
   const extra = passwordLength.value % setNumber;
 
